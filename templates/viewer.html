@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% load typogrify %}
+{% block extrahead %}
+<script>
+$(document).ready(function(){
+	{% if is_search %}
+	twitterAmbient.isSearch = true;
+	twitterAmbient.curPage = 1;
+	{% endif %}
+	
+	$("#maincontainer").click(function(e){
+		// $("#settings").hide();
+		// e.stopPropagation();
+	})
+	
+	twitterAmbient.baseURL = "{{baseURL|safe}}";
+	
+	twitterAmbient.insertScriptTag(twitterAmbient.curPage++);
+	
+	window.setTimeout(function(){
+		twitterAmbient.insertScriptTag(twitterAmbient.curPage++);	
+	}, 30000);
+
+			
+	$("#settings-button").click(function(){
+		$("#settings").toggle();
+		
+	})
+	
+	if (!$.cookie('seen-first-time')) {
+		$("#first-time").fadeIn();
+	} 
+	// $("#settings").append("<a style='float:right' href='/'>new search</a>")
+			
+	templating.outputSelect("settings", "functionalityoption", "refreshRate", "speed", ["Very slow|15000", "Slow|10000", "Medium|7000", "Fast|5000", "Very fast|2000"]);
+	$("#refreshRate").parent().append("<input type='button' onclick='twitterAmbient.playOrPause()' value='pause' id='playpause'>");			
+
+	templating.outputSelect("settings", "displayoption", "tweetcontainer_font-family", "font", ["Futura", "Frutiger Linotype", "Helvetica Neue", "Arial", "Calibri", "Verdana", "Century Gothic"]);
+	templating.outputSelect("settings", "displayoption","tweetcontainer_font-size", "font size", ["Tiny|1em", "Small|1.5em", "Medium|2em", "Large|3em", "Giant|5em"]);			
+
+	
+	//templating.outputSelect("settings", "displayoption", "maincontainer_color", "text color", ["Black|black", "White|white", "Red|red"]);
+	templating.outputColorInput("settings", "displayoption colorinput", "maincontainer_background-color", "background color");							
+	templating.outputColorInput("settings", "displayoption colorinput", "maincontainer_color", "text color");				
+	
+	$("#settings").append("<span id='save-feedback'><br/>Cookie saved.</span> <input type='button' onclick='twitterAmbient.saveOptions()' id='save-cookie' value='Save to cookie'>");
+
+
+	twitterAmbient.loadOptions();
+	twitterAmbient.applyOptions();
+	// twitterAmbient.insertScriptTag(twitterAmbient.curPage++);
+	// twitterAmbient.insertScriptTag(twitterAmbient.curPage++);						
+});
+</script>
+{% endblock %}
+
+{% block content %}
+	<div id="maincontainer">
+		<div id='tweetcontainer'></div>
+		<div id="settings-button"><div class='info-i'>i</div></div>
+		<div id="settings"></div>
+		<div id="first-time">Hi there. If you&rsquo;d like to experiment with different speeds for the visualizer, change the colors &amp; fonts, or more, click the &ldquo;i&rdquo; at the top right of the screen.<br/><a href='#' onclick="$('#first-time').hide();$.cookie('seen-first-time', 'true', {expires:365})">Thanks, got it.</a></div>
+		
+		<div id='back-home'><a href="/">back home</a></div>
+	</div>
+	<div id="colorpicker"></div>
+{% endblock %}

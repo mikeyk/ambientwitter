@@ -1,0 +1,38 @@
+<script>
+
+var names_array = ["Jessica", "Mike", "Dave", "Candy", "Brandi", "Britney", "Sandy", "Mary", "Jacob","Emily","Michael","Isabella","Ethan","Emma","Joshua","Ava","Daniel","Christopher","Sophia","Anthony","Olivia","William","Abigail","Matthew","Hannah","Andrew","Elizabeth"];
+function doSearch(){
+	window.location = "/search/" + $("#firstname").val().toLowerCase() + "/";
+}
+
+$(document).ready(function() { 
+	var rand_name = names_array[ Math.floor(Math.random() * names_array.length) ];
+	$("#firstname").val( rand_name );
+	$('#firstname').focus();
+	
+	window.setTimeout(function(){
+		$("#firstname").bind("keyup", function(event){
+			if(event.keyCode == 13){
+				doSearch();
+			}
+		});		
+	}, 1000);
+
+	$('#submit').bind("click", function(){
+		doSearch();
+	});
+	
+	
+	
+});
+
+</script>
+
+	<input type="text" name="firstname" value="" id="firstname">
+	likes to
+	{# <select name="action" id="action"  onchange="" size="1"> #}
+	{# 	<option value="likesto">likes to</option> #}
+	{# 	<option value="hatesto">hates to</option> #}
+	{# </select>		 #}
+	
+	<input type="button" name="submit" value="?" id="submit"/>

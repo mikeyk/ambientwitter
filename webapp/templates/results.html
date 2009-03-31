@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% load typogrify %}
+
+
+{% block title %}
+	Results for {{ search_phrase }}
+{% endblock %}
+
+{% block js %}
+<style type="text/css" media="screen">
+	#context{
+		display:none;
+	}
+</style>
+<script>
+var curIndex = -1;
+var results = new Array();
+{% for result in search_results  %}
+	results.push({'phrase':'{{result.phrase|typogrify}}', 'phrasefortwitter': "{{search_phrase}}" + "{{result.phrase}}", 'fullabstract':'{{result.fullabstract}}', 'clickurl':'{{result.clickurl}}', 'url':'{{result.url}}' });
+{% endfor %}
+
+	function updatePhrase(backwards){
+		if(backwards){
+			curIndex--;
+			if(curIndex < 0) curIndex = results.length-1;
+		}	else{
+			curIndex++;
+			if(curIndex == results.length) curIndex = 0;
+		}	
+		$("#context").hide();
+		$("#fullabstract").html( results[curIndex]['fullabstract'] );
+		$("#prefix").html( '{{search_phrase}}' );
+		var phrase = results[curIndex]['phrase'];
+		if(phrase.match("&#8220;") && !phrase.match("&#8221;")){
+			phrase = phrase + "&#8221;"
+		};
+		
+		
+		$("#phrase").html( phrase );
+		$("#url")[0].href = results[curIndex]['clickurl'];
+		$("#url").text( results[curIndex]['url'] );
+		
+		var shortened = results[curIndex]['phrasefortwitter'].substr(0, 111);
+		var twitterPhrase = "\"" + shortened + ",\" -- www.jessicalikesto.com";
+		
+		$("#twitter-link")[0].href = "http://twitter.com/home?status=" + encodeURIComponent(twitterPhrase);
+		if(curIndex > results.length) curIndex = 0;
+		
+		$("#short-url-intro").hide();
+		
+		$("#short-url").text("");
+		
+	}
+	
+	function viewContext(){
+		$("#context").fadeIn();
+	}
+	
+	function showNewName(){
+		$("#try-diff-name").hide();
+		$("#new-name").fadeIn();
+		$("#firstname").focus();
+	}
+	
+	function generatePermalink(){
+		$("#short-url-in-progress").show();
+		$.post({% url webapp.views.generate_permalink %}, {'phrase':results[curIndex]['phrase'], 'prefix':"{{search_phrase}}"}, function(data){
+			if(data != "FAIL"){
+				$("#short-url-in-progress").hide();				
+				$("#short-url-in-progress").text("working on it...");								
+				$("#short-url-intro").show();
+				$("#short-url")[0].href = data;
+				$("#short-url").text(data);
+			} else{
+				$("#short-url-in-progress").text("whoops, looks like something went wrong. try again later?");								
+			}
+		});
+	}
+
+	$(document).ready(function(){
+		updatePhrase();
+		$(document).bind("keyup", function(event){
+			if(event.keyCode == 37){
+				updatePhrase(true);
+			} else if(event.keyCode == 39){
+				updatePhrase();
+			}
+		})
+	});
+</script>
+{% endblock %}
+
+
+{% block content %}
+
+	{% if not search_results %}
+		Sorry, no results.
+	{% endif %}
+	<div id='phrase-and-context'>
+	<div id='activity'><span id="prefix"></span><span id="phrase"></span></div>
+	<div id='context'>
+		<span id='fullabstract'></span>
+		<br/>
+		(from <a id='url'></a>)
+	</div>	
+	</div>
+	<div id="actions">
+		{% if search_results %}
+		<a href="#" onclick="updatePhrase(); return false">see another one?</a> <span class='instructions'>(&larr; &rarr; work too)</span> <br/>			
+		{% endif %}
+	<div style='display:none' id='new-name'>{% include "mainform.html" %}</div>
+	<span id='try-diff-name'>
+		<a href="#" onclick='showNewName();'>try a different name?</a></span>  <br/>
+		{% if search_results %}	
+	<a href="#" onclick="generatePermalink(); return false">short-link to this entry</a> <span id='short-url-in-progress' style='display:none'>working on it...</span> <span style='display:none' id='short-url-intro'>copy this link:</span> <a id='short-url'></a> <br/>
+ 
+	<a href="#" onclick="viewContext(); return false">view phrase in context</a> <br/>
+	<a href="" target="_blank" id='twitter-link'>paste into a new Twitter message</a> <br/>
+	{% endif %}
+	</div>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load typogrify %}
+{% block title %}
+{{firstname}} likes to...
+{% endblock %}
+{% block content %}
+	<div id='activity'>
+		<span id='prefix'>{{prefix}}</span>
+		<span id='phrase'>{{phrase|typogrify}}</span>
+	</div>
+	<div id='actions'>
+		<a href="/name/{{firstname}}">see more phrases for {{firstname}}</a><br/>
+		<span id='try-your-own'>or <a href="#" onclick="$('#new-name').fadeIn();$('#try-your-own').hide();return false;">try your own</a></span><br/>
+		<div style='display:none' id='new-name'>{% include "mainform.html" %}</div>	
+		<a href="/">back home</a>		
+	</div>
+{% endblock %}

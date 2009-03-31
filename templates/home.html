@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block extrahead %}
+<style>
+	a {
+		color: inherit;
+		border-bottom: 1px dotted;
+		text-decoration: none;
+	}
+</style>
+<script>
+	function redirect(){
+		var type = $("input[name='type']:checked").val();
+		// var type = $($(".active").contents()[0]).val();
+		var parameter = $("#parameter").val();
+		if (parameter != "" || type == "mine"){
+			if (type == "favorites") {
+				window.location.href = "/user/" + parameter + "/favorites/"
+			} else if (type == "user") {
+				window.location.href = "/user/" + parameter;
+			} else if (type == "mine") {
+				window.location.href = "/me";
+			} else if (type == "search") {
+				window.location.href = "/search/" + encodeURIComponent(parameter);
+			}
+			
+		}
+	}
+	
+	function prefillParameterField(){
+		var type = $($(".active").contents()[0]).val();
+		if (type == "mine") $("#parameter").hide();
+		else {
+			$("#parameter").show();
+			// if (type == 'search') $('#parameter').val("query");
+			// else $('#parameter').val("username");			
+			
+		}			
+		
+	}
+	$(document).ready(function(){
+		$("#gobutton").bind("click", function(){
+			redirect();
+		})
+		
+		$("#choices label").bind("click", function(){
+			$("#choices label").removeClass("active");
+			$("#choices label").addClass("inactive");			
+			$(this).addClass("active");
+			$(this).removeClass("inactive");
+			prefillParameterField();
+			$("#parameter").focus();
+		})
+		$("#parameter").bind("keyup", function(event){
+			if (event.keyCode == 13) {
+				redirect();
+			}
+		})
+		$("#parameter").focus(function(){
+			if ($(this).val() == "username" || $(this).val() == "query"){
+				$(this).val("");
+			}
+			
+		})
+		
+		$("#parameter").focus();
+		
+		$("#parameter").blur(function(){
+			if($(this).val() == ""){
+				prefillParameterField();
+			}
+		})
+	})
+</script>
+{% endblock %}
+{% block content %}
+	<div id='homewrapper'>
+		<h1>ambientwitter</h1>
+	<div id='mainform'><div class='floatleft'>Show me <span id='hugebracket'>{</span></div><div id='choices' class='floatleft'>
+		<label class="active" for="favorites" ><input class='hiddenradio' checked type="radio" value="favorites" id="favorites" name="type" />tweets favorited by</label><br/> 
+		<label class="inactive" for="user"><input type="radio" class='hiddenradio' value="user"  id="user" name="type" />tweets by</label><br/> 
+		<label class="inactive" for="search"><input type="radio" class='hiddenradio' value="search"  id="search"  name="type" />search results for</label><br/> 		
+		<label class="inactive" for="mine"><input type="radio" class='hiddenradio' value="mine" id="mine" name="type" />my friends&rsquo; tweets</label><br/> 			
+		
+	</div>
+	
+
+	
+	<div class='floatleft buttons'>
+	<input type="text" name="parameter" value="username" id="parameter">
+	<input type="button" id='gobutton' value="Go">
+	</div>
+	<div class='clearboth'></div>
+	</div>
+		<br/>Like this? <a href="http://twitter.com/home?status=Check%20out%20ambientwitter%20at%20http%3A//ambientwitter.appspot.com">Tweet it!</a>
+		<div id='about'>ambientwitter is an experiment in making a calm Twitter visualizer by <a href="http://twitter.com/mikeyk/" target="_blank">@mikeyk</a>. it's hosted on google app engine &amp; uses Django, jQuery, jQuery-cookie, and jQuery-farbtastic for the color picker. all twitter calls are done client-side, straight to Twitter, which means your username and password never go through our server. it'll look best on computers with crisp screens and fun fonts like Futura installed.</div> 
+</div>	
+
+</div>
+{% endblock %}

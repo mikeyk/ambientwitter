@@ -1,0 +1,43 @@
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+    dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}"
+    xml:lang="{% firstof LANGUAGE_CODE 'en' %}"
+    lang="{% firstof LANGUAGE_CODE 'en' %}">
+  <head>
+    <title>{% block title %}{% endblock %} - ambientwitter.com</title>
+    {% block css %}
+      <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}combined-{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}.css" />
+    {% endblock %}
+
+
+<script src="{{ MEDIA_URL }}combined-{% firstof LANGUAGE_CODE 'en' %}.js" type="text/javascript" charset="utf-8"></script>
+	
+	
+    {% block extrahead %}{% endblock %}
+    {% block js %}{% endblock %}
+
+  </head>
+
+  <body>
+    {% block header %}
+    {% endblock %}
+		{% block content %}
+		{% endblock %}
+
+		
+	
+
+	<script type="text/javascript">
+	var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+	document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	</script>
+	<script type="text/javascript">
+	try {
+	var pageTracker = _gat._getTracker("UA-7499235-1");
+	pageTracker._trackPageview();
+	} catch(err) {}</script>
+  </body>
+</html>
